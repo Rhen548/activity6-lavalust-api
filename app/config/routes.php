@@ -45,3 +45,27 @@ defined('PREVENT_DIRECT_ACCESS') OR exit('No direct script access allowed');
 /** @var object $router **/
 
 $router->get('/', 'Welcome::index');
+
+$router->get('create-migration/{migration_class}', 'MigrationController::create_migration');
+$router->get('migrate', 'MigrationController::migrate');
+$router->get('rollback', 'MigrationController::rollback');
+$router->get('rollback-all', 'MigrationController::rollback_all');
+$router->get('refresh', 'MigrationController::refresh');
+$router->get('status', 'MigrationController::status');
+$router->get('/api/products', 'ProductApiController::index');
+$router->post('/api/products', 'ProductApiController::store');
+$router->put('/api/products/{id}', 'ProductApiController::update');
+$router->delete('/api/products/{id}', 'ProductApiController::delete');
+// Authentication API Routes
+$router->post('/api/create', 'ApiController::create');
+$router->post('/api/login', 'ApiController::login');
+$router->post('/api/refresh', 'ApiController::refresh');
+$router->post('/api/logout', 'ApiController::logout');
+
+$router->options('/api/login', 'ApiController::options');
+$router->options('/api/create', 'ApiController::options');
+$router->options('/api/refresh', 'ApiController::options');
+$router->options('/api/logout', 'ApiController::options');
+
+$router->options('/api/products', 'ApiController::options');
+$router->options('/api/products/{id}', 'ApiController::options');
