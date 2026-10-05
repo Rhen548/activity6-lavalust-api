@@ -91,11 +91,23 @@ class ApiController extends Controller
         }
 
         $tokens = $this->api->issue_tokens([
-            'id'   => $user['id'],
-            'role' => $user['role']
-        ]);
+    'id'   => $user['id'],
+    'role' => $user['role']
+]);
 
-        $this->api->respond($tokens, 200);
+$this->api->respond([
+    'access_token'  => $tokens['access_token'],
+    'refresh_token' => $tokens['refresh_token'],
+    'expires_in'    => $tokens['expires_in'],
+    'token_type'    => $tokens['token_type'],
+
+    'user' => [
+        'id'       => $user['id'],
+        'username' => $user['username'],
+        'email'    => $user['email'],
+        'role'     => $user['role']
+    ]
+], 200);
     }
 
     public function refresh()
