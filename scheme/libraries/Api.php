@@ -373,12 +373,18 @@ class Api
      * @param integer $code
      * @return void
      */
-    public function respond($data, $code = 200)
-    {
-        http_response_code($code);
-        echo json_encode($data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
-        exit;
-    }
+   public function respond($data, $code = 200)
+{
+    http_response_code($code);
+    header('Content-Type: application/json; charset=UTF-8');
+
+    echo json_encode(
+        $data,
+        JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE
+    );
+
+    exit;
+}
 
     /**
      * respond_error
