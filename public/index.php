@@ -2,7 +2,8 @@
 
 $allowedOrigins = [
     'http://localhost:5173',
-    'http://localhost:5174'
+    'http://localhost:5174',
+    'https://activity6-react-frontend.vercel.app'
 ];
 
 $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
