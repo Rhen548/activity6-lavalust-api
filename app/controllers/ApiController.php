@@ -67,48 +67,45 @@ class ApiController extends Controller
         ], 201);
     }
 
-    public function login()
-    {
-        $this->api->require_method('POST');
+   public function login()
+{
+    $this->api->require_method('POST');
 
-        $input = $this->api->body();
+    $input = $this->api->body();
 
-        $username = trim($input['username'] ?? '');
-        $password = $input['password'] ?? '';
+    $username = trim($input['username'] ?? '');
+    $password = $input['password'] ?? '';
 
-        $stmt = $this->db->raw(
-            'SELECT * FROM users WHERE username = ?',
-            [$username]
+    $stmt = $this->db->raw(
+        'SELECT * FROM users WHERE username = ?',
+        [$username]
+    );
+
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if (!$user || !password_verify($password, $user['password'])) {
+        $this->api->respond_error(
+            'Invalid credentials.',
+            401
         );
-
-        $user = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        if (!$user || !password_verify($password, $user['password'])) {
-            $this->api->respond_error(
-                'Invalid credentials.',
-                401
-            );
-        }
-
-        $tokens = $this->api->issue_tokens([
-    'id'   => $user['id'],
-    'role' => $user['role']
-]);
-
-$this->api->respond([
-    'access_token'  => $tokens['access_token'],
-    'refresh_token' => $tokens['refresh_token'],
-    'expires_in'    => $tokens['expires_in'],
-    'token_type'    => $tokens['token_type'],
-
-    'user' => [
-        'id'       => $user['id'],
-        'username' => $user['username'],
-        'email'    => $user['email'],
-        'role'     => $user['role']
-    ]
-], 200);
     }
+
+    $tokens = $this->api->issue_tokens([
+        'id'   => $user['id'],
+        'role' => $user['role']
+    ]);
+
+    $this->api->respond([
+        // Used by our React frontend
+        'access_token'  => $tokens['access_token'],
+        'refresh_token' => $tokens['refresh_token'],
+        'expires_in'    => $tokens['expires_in'],
+        'token_type'    => $tokens['token_type'],
+
+        // Used by LavaLust API Tester
+        'tokens' => $tokens
+    ], 200);
+}
 
     public function refresh()
 {
