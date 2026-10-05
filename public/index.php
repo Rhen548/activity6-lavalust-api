@@ -3,7 +3,8 @@
 $allowedOrigins = [
     'http://localhost:5173',
     'http://localhost:5174',
-    'https://activity6-react-frontend.vercel.app'
+    'https://activity6-react-frontend.vercel.app',
+    'https://api-tester.marasigan.dev'
 ];
 
 $origin = $_SERVER['HTTP_ORIGIN'] ?? '';

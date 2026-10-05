@@ -131,7 +131,8 @@ public function options()
 $allowedOrigins = [
     'http://localhost:5173',
     'http://localhost:5174',
-    'https://activity6-react-frontend.vercel.app'
+    'https://activity6-react-frontend.vercel.app',
+    'https://api-tester.marasigan.dev'
 ];
 
 if (in_array($origin, $allowedOrigins, true)) {
