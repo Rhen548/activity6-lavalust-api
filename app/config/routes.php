@@ -61,6 +61,7 @@ $router->post('/api/create', 'ApiController::create');
 $router->post('/api/login', 'ApiController::login');
 $router->post('/api/refresh', 'ApiController::refresh');
 $router->post('/api/logout', 'ApiController::logout');
+$router->get('/api/profile', 'ApiController::profile');
 
 $router->options('/api/login', 'ApiController::options');
 $router->options('/api/create', 'ApiController::options');
