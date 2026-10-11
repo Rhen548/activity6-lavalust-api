@@ -224,6 +224,99 @@ public function delete_user($id)
     ], 200);
 }
 
+public function update_user($id)
+{
+    $auth = $this->api->require_jwt();
+
+    $currentUserId = $auth['sub'] ?? null;
+    $currentRole   = $auth['role'] ?? null;
+
+    if (!$id) {
+        $this->api->respond_error(
+            'User ID is required.',
+            422
+        );
+    }
+
+    // Normal users can only update themselves.
+    // Admins can update other users.
+    if ($currentRole !== 'admin' && (int)$currentUserId !== (int)$id) {
+        $this->api->respond_error(
+            'You are not allowed to update this user.',
+            403
+        );
+    }
+
+    $stmt = $this->db->raw(
+        'SELECT * FROM users WHERE id = ? LIMIT 1',
+        [$id]
+    );
+
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if (!$user) {
+        $this->api->respond_error(
+            'User not found.',
+            404
+        );
+    }
+
+    $body = $this->api->body();
+
+    $username = trim($body['username'] ?? '');
+    $email    = trim($body['email'] ?? '');
+    $role     = trim($body['role'] ?? '');
+
+    $newUsername = $username !== '' ? $username : $user['username'];
+    $newEmail    = $email !== '' ? $email : $user['email'];
+    $newRole     = $role !== '' ? $role : $user['role'];
+
+    // Only admin can change roles
+    if ($currentRole !== 'admin') {
+        $newRole = $user['role'];
+    }
+
+    // Prevent duplicate username/email
+    $duplicate = $this->db->raw(
+        'SELECT id
+         FROM users
+         WHERE (username = ? OR email = ?)
+         AND id != ?
+         LIMIT 1',
+        [$newUsername, $newEmail, $id]
+    );
+
+    if ($duplicate->fetch(PDO::FETCH_ASSOC)) {
+        $this->api->respond_error(
+            'Username or email is already in use.',
+            409
+        );
+    }
+
+    $this->db->raw(
+        'UPDATE users
+         SET username = ?, email = ?, role = ?
+         WHERE id = ?',
+        [
+            $newUsername,
+            $newEmail,
+            $newRole,
+            $id
+        ]
+    );
+
+    $this->api->respond([
+        'status'  => true,
+        'message' => 'User updated successfully.',
+        'data'    => [
+            'id'       => (int)$id,
+            'username' => $newUsername,
+            'email'    => $newEmail,
+            'role'     => $newRole
+        ]
+    ], 200);
+}
+
 public function list()
 {
     $auth = $this->api->require_jwt();

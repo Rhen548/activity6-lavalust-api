@@ -76,3 +76,6 @@ $router->options('/api/list', 'ApiController::options');
 
 $router->delete('/api/delete/{id}', 'ApiController::delete_user');
 $router->options('/api/delete/{id}', 'ApiController::options');
+
+$router->put('/api/update/{id}', 'ApiController::update_user');
+$router->options('/api/update/{id}', 'ApiController::options');
