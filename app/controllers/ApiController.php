@@ -164,6 +164,66 @@ public function logout()
     ], 200);
 }
 
+public function delete_user($id)
+{
+    $auth = $this->api->require_jwt();
+
+    $currentUserId = $auth['sub'] ?? null;
+    $currentRole   = $auth['role'] ?? null;
+
+    if ($currentRole !== 'admin') {
+        $this->api->respond_error(
+            'Admin access required.',
+            403
+        );
+    }
+
+    if (!$id) {
+        $this->api->respond_error(
+            'User ID is required.',
+            422
+        );
+    }
+
+    if ((int) $currentUserId === (int) $id) {
+        $this->api->respond_error(
+            'You cannot delete your own account.',
+            403
+        );
+    }
+
+    $stmt = $this->db->raw(
+        'SELECT id, username, email, role
+         FROM users
+         WHERE id = ?
+         LIMIT 1',
+        [$id]
+    );
+
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if (!$user) {
+        $this->api->respond_error(
+            'User not found.',
+            404
+        );
+    }
+
+    $this->db->raw(
+        'DELETE FROM users WHERE id = ?',
+        [$id]
+    );
+
+    $this->api->respond([
+        'status'  => true,
+        'message' => 'User deleted successfully.',
+        'data'    => [
+            'id'       => $user['id'],
+            'username' => $user['username']
+        ]
+    ], 200);
+}
+
 public function list()
 {
     $auth = $this->api->require_jwt();
