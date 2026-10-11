@@ -70,3 +70,6 @@ $router->options('/api/logout', 'ApiController::options');
 
 $router->options('/api/products', 'ApiController::options');
 $router->options('/api/products/{id}', 'ApiController::options');
+
+$router->get('/api/list', 'ApiController::list');
+$router->options('/api/list', 'ApiController::options');

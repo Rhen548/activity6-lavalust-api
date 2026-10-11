@@ -164,6 +164,17 @@ public function logout()
     ], 200);
 }
 
+public function list()
+{
+    $auth = $this->api->require_jwt();
+
+    $users = $this->db->table('users')
+        ->select('id, username, email, role, created_at')
+        ->get_all();
+
+    $this->api->respond($users, 200);
+}
+
 public function options()
 {
     $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
